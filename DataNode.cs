@@ -22,6 +22,18 @@ namespace Parser
             return new DataNode(name, chars);
         }
 
+        public void PrintValues()
+        {
+            foreach (var val in value)
+            {
+                if (val.Type == ValueType.String)
+                {
+                    var strValue = val.valueData as string;
+                    Console.WriteLine($"{val.Name} {val.Type} {strValue}");
+                }
+            }
+        }
+
         private DataNode(string name, char[] chars)
         {
             value = new List<DataNode>();
@@ -39,23 +51,11 @@ namespace Parser
                     value = Parser.DefineObject(_valueChars);
                     break;
                 case ValueType.Array:
-                    DefineArray();
+                    value = Parser.DefineArray(_valueChars);
                     break;
                 case ValueType.String:
                     (Type, valueData) = Parser.DefineString(_valueChars);
                     break;
-            }
-
-            foreach (var val in value)
-            {
-                var strValue = val.valueData as string;
-                Console.WriteLine($"{val.Name} {val.Type} {strValue}");
-            }
-
-
-            void DefineArray()
-            {
-                
             }
         }
     }

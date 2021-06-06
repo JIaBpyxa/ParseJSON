@@ -165,5 +165,10 @@ namespace Parser
                 _ => (ValueType.String, value)
             };
         }
+
+        public static List<DataNode> DefineArray(char[] valueChars)
+        {
+            return null;
+        }
     }
 }
