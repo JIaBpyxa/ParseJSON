@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using static System.Single;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Parser
 {
@@ -37,7 +36,7 @@ namespace Parser
             switch (Type)
             {
                 case ValueType.Object:
-                    DefineObject();
+                    value = Parser.DefineObject(_valueChars);
                     break;
                 case ValueType.Array:
                     DefineArray();
@@ -47,11 +46,12 @@ namespace Parser
                     break;
             }
 
-
-            void DefineObject()
+            foreach (var val in value)
             {
-                
+                var strValue = val.valueData as string;
+                Console.WriteLine($"{val.Name} {val.Type} {strValue}");
             }
+
 
             void DefineArray()
             {
