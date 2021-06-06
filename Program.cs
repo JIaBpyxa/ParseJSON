@@ -8,7 +8,13 @@ namespace Parser
         {
             Console.WriteLine("Hello World!");
             var content = IOController.TryGetInputFileContent();
-            Console.WriteLine(content);
+            var chars = content.ToCharArray();
+
+            var objectBeginIndex = Parser.GetObjectBeginIndex(chars);
+            var objectEndIndex = Parser.GetObjectEndIndex(chars);
+
+            Console.WriteLine($"Begin {objectBeginIndex} End {objectEndIndex}");
+            var mainNode = DataNode.CreateInstance(chars);
         }
     }
 }

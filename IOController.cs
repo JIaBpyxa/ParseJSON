@@ -9,14 +9,19 @@ namespace Parser
         {
             try
             {
-                var path = Console.ReadLine();
-                return File.ReadAllText(path);
+                return GetInputFileContent();
             }
-            catch (Exception e)
+            catch
             {
                 Console.WriteLine("Cannot read file");
                 return "";
             }
+        }
+
+        private static string GetInputFileContent()
+        {
+            var path = Console.ReadLine();
+            return File.ReadAllText(path);
         }
     }
 }
