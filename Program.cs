@@ -1,4 +1,6 @@
-﻿namespace Parser
+﻿using System;
+
+namespace Parser
 {
     class Program
     {

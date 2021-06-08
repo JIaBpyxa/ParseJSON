@@ -43,7 +43,7 @@ namespace Parser
 
         public static List<DataNode> DefineObject(char[] valueChars)
         {
-            var objectOpened = -1;
+            var objectOpened = 0;
             var arraysOpened = 0;
             var isNameStarted = false;
             var isValueStarted = false;
@@ -58,21 +58,25 @@ namespace Parser
 
             var nodes = new List<DataNode>();
 
-            for (var index = 0; index < valueChars.Length; index++)
+            for (var index = GetObjectBeginIndex(valueChars) + 1; index < valueChars.Length; index++)
             {
                 switch (valueChars[index])
                 {
                     case BeginObject:
                         objectOpened++;
+                        CheckBeginObject(index);
                         break;
                     case EndObject:
                         objectOpened--;
+                        CheckEndObject(index);
                         break;
                     case BeginArray:
                         arraysOpened++;
+                        CheckBeginArray(index);
                         break;
                     case EndArray:
                         arraysOpened--;
+                        CheckEndArray(index);
                         break;
                     case QuotationMark:
                         CheckQuotationMark(index);
@@ -83,22 +87,72 @@ namespace Parser
             return nodes;
 
 
+            void CheckBeginObject(int index)
+            {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+
+                if (objectOpened.Equals(1))
+                {
+                    StartValue(index);
+                }
+            }
+
+            void CheckEndObject(int index)
+            {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+
+                if (objectOpened != 0 || arraysOpened != 0) return;
+
+                EndValue(index);
+                AddNode();
+            }
+
+            void CheckBeginArray(int index)
+            {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+                
+                if (arraysOpened.Equals(1))
+                {
+                    StartValue(index);
+                }
+            }
+
+            void CheckEndArray(int index)
+            {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+                
+                if (objectOpened != 0 || arraysOpened != 0) return;
+
+                EndValue(index);
+                AddNode();
+            }
+
             void CheckQuotationMark(int index)
             {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+
                 if (isNameStarted)
                 {
                     EndName(index);
                 }
                 else
                 {
-                    if (isValueStarted)
-                    {
-                        if (objectOpened == 0 && arraysOpened == 0)
-                        {
-                            EndValue(index);
-                        }
-                    }
-                    else
+                    if (!isValueStarted)
                     {
                         if (namesFound == valuesFound)
                         {
@@ -108,6 +162,12 @@ namespace Parser
                         {
                             StartValue(index);
                         }
+                    }
+                    else
+                    {
+                        if (objectOpened != 0 || arraysOpened != 0) return;
+                        EndValue(index);
+                        AddNode();
                     }
                 }
             }
@@ -136,13 +196,13 @@ namespace Parser
                 valueEndIndex = index;
                 isValueStarted = false;
                 valuesFound++;
-                AddNode();
             }
 
             void AddNode()
             {
                 var name = string.Concat(valueChars).Substring(nameStartIndex, nameEndIndex - nameStartIndex + 1);
                 var value = string.Concat(valueChars).Substring(valueStartIndex, valueEndIndex - valueStartIndex);
+                Console.WriteLine($"ABOBA {value[0]}");
                 var node = DataNode.CreateInstance(name, value.ToCharArray());
                 nodes.Add(node);
             }
