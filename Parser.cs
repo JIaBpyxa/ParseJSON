@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using static Parser.StructuralChars;
 
 namespace Parser
@@ -170,7 +169,7 @@ namespace Parser
 
             if (float.TryParse(value, out var number))
             {
-                return (ValueType.Number, number);
+                return (ValueType.Number, value);
             }
 
             return value switch

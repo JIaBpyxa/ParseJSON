@@ -1,10 +1,8 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 
 namespace Parser
 {
-    public class ClassCreator
+    public class StructCreator
     {
         public static void CreateClass(DataNode dataNode)
         {
@@ -13,7 +11,16 @@ namespace Parser
                 return;
             }
 
-            var filePathAndName = $"Output/{dataNode.Name}.cs";
+            var filePath = "Output";
+            var filePathAndName = $"{filePath}/{dataNode.Name}.cs";
+            
+            var directoryInfo = new DirectoryInfo(filePath);
+            var files = directoryInfo.GetFiles($"{dataNode.Name}.cs");
+
+            if (files.Length > 0)
+            {
+                return;
+            }
 
             using var streamWriter = new StreamWriter(filePathAndName, false);
             WriteClassTop(streamWriter, "testNameSpace", dataNode.Name);
@@ -27,7 +34,7 @@ namespace Parser
         {
             streamWriter.WriteLine($"namespace {namespaceName}");
             streamWriter.WriteLine("{");
-            streamWriter.WriteLine($"\tpublic class {className}");
+            streamWriter.WriteLine($"\tpublic struct {className}");
             streamWriter.WriteLine("\t{");
         }
 

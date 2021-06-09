@@ -10,7 +10,7 @@ namespace Parser
             var chars = content.ToCharArray();
             var mainNode = DataNode.CreateInstance(chars);
             mainNode.PrintValues();
-            ClassCreator.CreateClass(mainNode);
+            StructCreator.CreateClass(mainNode);
         }
     }
 }
