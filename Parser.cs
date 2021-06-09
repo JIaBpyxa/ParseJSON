@@ -8,39 +8,6 @@ namespace Parser
 {
     public static class Parser
     {
-        public static int GetObjectBeginIndex(char[] chars)
-        {
-            for (var index = 0; index < chars.Length; index++)
-            {
-                if (!chars[index].Equals(BeginObject)) continue;
-                return index;
-            }
-
-            throw new Exception("Can't find object's begin");
-        }
-
-        public static int GetObjectEndIndex(char[] chars)
-        {
-            for (var index = chars.Length - 1; index >= 0; index--)
-            {
-                if (!chars[index].Equals(EndObject)) continue;
-                return index;
-            }
-
-            throw new Exception("Can't find object's end");
-        }
-        
-        public static int GetArrayBeginIndex(char[] chars)
-        {
-            for (var index = 0; index < chars.Length; index++)
-            {
-                if (!chars[index].Equals(BeginArray)) continue;
-                return index;
-            }
-
-            throw new Exception("Can't find array's begin");
-        }
-
         public static ValueType DefineValueType(IEnumerable<char> valueChars)
         {
             var firstStructuralChar = valueChars.First(c => c != Space);
@@ -100,24 +67,15 @@ namespace Parser
 
             void CheckBeginObject(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
-
-                if (objectOpened.Equals(1) && arraysOpened.Equals(0))
-                {
-                    StartValue(index);
-                }
+                if (index > 0 && valueChars[index - 1] == '\\') return;
+                if (objectOpened != 1 || arraysOpened != 0) return;
+                
+                StartValue(index);
             }
 
             void CheckEndObject(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
-
+                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 0 || arraysOpened != 0) return;
 
                 EndValue(index);
@@ -126,24 +84,15 @@ namespace Parser
 
             void CheckBeginArray(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
-
-                if (arraysOpened.Equals(1) && objectOpened.Equals(0))
-                {
-                    StartValue(index);
-                }
+                if (index > 0 && valueChars[index - 1] == '\\') return;
+                if (arraysOpened != 1 || objectOpened != 0) return;
+                
+                StartValue(index);
             }
 
             void CheckEndArray(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
-
+                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 0 || arraysOpened != 0) return;
 
                 EndValue(index);
@@ -152,10 +101,7 @@ namespace Parser
 
             void CheckQuotationMark(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
+                if (index > 0 && valueChars[index - 1] == '\\') return;
 
                 if (isNameStarted)
                 {
@@ -280,24 +226,15 @@ namespace Parser
 
             void CheckBeginObject(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
-
-                if (objectOpened.Equals(1) && arraysOpened.Equals(0))
-                {
-                    StartValue(index);
-                }
+                if (index > 0 && valueChars[index - 1] == '\\') return;
+                if (objectOpened != 1 || arraysOpened != 0) return;
+                
+                StartValue(index);
             }
 
             void CheckEndObject(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
-
+                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 0 || arraysOpened != 0) return;
 
                 EndValue(index);
@@ -306,24 +243,15 @@ namespace Parser
 
             void CheckBeginArray(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
-
-                if (arraysOpened.Equals(1))
-                {
-                    StartValue(index);
-                }
+                if (index > 0 && valueChars[index - 1] == '\\') return;
+                if (arraysOpened != 1 || objectOpened != 0) return;
+                
+                StartValue(index);
             }
 
             void CheckEndArray(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
-
+                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 0 || arraysOpened != 0) return;
 
                 EndValue(index);
@@ -332,10 +260,7 @@ namespace Parser
 
             void CheckQuotationMark(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\')
-                {
-                    return;
-                }
+                if (index > 0 && valueChars[index - 1] == '\\') return;
 
                 if (!isValueStarted)
                 {
@@ -374,6 +299,28 @@ namespace Parser
                 var node = DataNode.CreateInstance(name, value.ToCharArray());
                 nodes.Add(node);
             }
+        }
+
+        private static int GetObjectBeginIndex(char[] chars)
+        {
+            for (var index = 0; index < chars.Length; index++)
+            {
+                if (!chars[index].Equals(BeginObject)) continue;
+                return index;
+            }
+
+            throw new Exception("Can't find object's begin");
+        }
+
+        private static int GetArrayBeginIndex(char[] chars)
+        {
+            for (var index = 0; index < chars.Length; index++)
+            {
+                if (!chars[index].Equals(BeginArray)) continue;
+                return index;
+            }
+
+            throw new Exception("Can't find array's begin");
         }
     }
 }
