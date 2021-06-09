@@ -39,7 +39,7 @@ namespace Parser
                 if (node.Type == ValueType.String)
                 {
                     var strValue = node.valueData as string;
-                    //Console.WriteLine($"{strValue}");
+                    Console.WriteLine($"{strValue}");
                 }
                 node.PrintValues();
             }
@@ -53,7 +53,7 @@ namespace Parser
                     value = Parser.DefineObject(_valueChars);
                     break;
                 case ValueType.Array:
-                    value = Parser.DefineArray(_valueChars);
+                    value = Parser.DefineArray(Name, _valueChars);
                     break;
                 case ValueType.String:
                     (Type, valueData) = Parser.DefineString(_valueChars);

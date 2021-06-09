@@ -29,6 +29,17 @@ namespace Parser
 
             throw new Exception("Can't find object's end");
         }
+        
+        public static int GetArrayBeginIndex(char[] chars)
+        {
+            for (var index = 0; index < chars.Length; index++)
+            {
+                if (!chars[index].Equals(BeginArray)) continue;
+                return index;
+            }
+
+            throw new Exception("Can't find array's begin");
+        }
 
         public static ValueType DefineValueType(IEnumerable<char> valueChars)
         {
@@ -94,7 +105,7 @@ namespace Parser
                     return;
                 }
 
-                if (objectOpened.Equals(1))
+                if (objectOpened.Equals(1) && arraysOpened.Equals(0))
                 {
                     StartValue(index);
                 }
@@ -119,8 +130,8 @@ namespace Parser
                 {
                     return;
                 }
-                
-                if (arraysOpened.Equals(1))
+
+                if (arraysOpened.Equals(1) && objectOpened.Equals(0))
                 {
                     StartValue(index);
                 }
@@ -132,7 +143,7 @@ namespace Parser
                 {
                     return;
                 }
-                
+
                 if (objectOpened != 0 || arraysOpened != 0) return;
 
                 EndValue(index);
@@ -202,7 +213,6 @@ namespace Parser
             {
                 var name = string.Concat(valueChars).Substring(nameStartIndex, nameEndIndex - nameStartIndex + 1);
                 var value = string.Concat(valueChars).Substring(valueStartIndex, valueEndIndex - valueStartIndex);
-                Console.WriteLine($"ABOBA {value[0]}");
                 var node = DataNode.CreateInstance(name, value.ToCharArray());
                 nodes.Add(node);
             }
@@ -226,9 +236,144 @@ namespace Parser
             };
         }
 
-        public static List<DataNode> DefineArray(char[] valueChars)
+        public static List<DataNode> DefineArray(string arrayName, char[] valueChars)
         {
-            return null;
+            var objectOpened = 0;
+            var arraysOpened = 0;
+            var isValueStarted = false;
+
+            var valueStartIndex = -1;
+            var valueEndIndex = -1;
+
+            var valuesFound = 0;
+
+            var nodes = new List<DataNode>();
+
+            for (var index = GetArrayBeginIndex(valueChars) + 1; index < valueChars.Length; index++)
+            {
+                switch (valueChars[index])
+                {
+                    case BeginObject:
+                        objectOpened++;
+                        CheckBeginObject(index);
+                        break;
+                    case EndObject:
+                        objectOpened--;
+                        CheckEndObject(index);
+                        break;
+                    case BeginArray:
+                        arraysOpened++;
+                        CheckBeginArray(index);
+                        break;
+                    case EndArray:
+                        arraysOpened--;
+                        CheckEndArray(index);
+                        break;
+                    case QuotationMark:
+                        CheckQuotationMark(index);
+                        break;
+                }
+            }
+
+            return nodes;
+
+
+            void CheckBeginObject(int index)
+            {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+
+                if (objectOpened.Equals(1) && arraysOpened.Equals(0))
+                {
+                    StartValue(index);
+                }
+            }
+
+            void CheckEndObject(int index)
+            {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+
+                if (objectOpened != 0 || arraysOpened != 0) return;
+
+                EndValue(index);
+                AddNode();
+            }
+
+            void CheckBeginArray(int index)
+            {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+
+                if (arraysOpened.Equals(1))
+                {
+                    StartValue(index);
+                }
+            }
+
+            void CheckEndArray(int index)
+            {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+
+                if (objectOpened != 0 || arraysOpened != 0) return;
+
+                EndValue(index);
+                AddNode();
+            }
+
+            void CheckQuotationMark(int index)
+            {
+                if (index > 0 && valueChars[index - 1] == '\\')
+                {
+                    return;
+                }
+
+                if (!isValueStarted)
+                {
+                    StartValue(index);
+                }
+                else
+                {
+                    if (objectOpened != 0 || arraysOpened != 0) return;
+                    EndValue(index);
+                    AddNode();
+                }
+            }
+
+            void StartValue(int index)
+            {
+                isValueStarted = true;
+                valueStartIndex = index;
+            }
+
+            void EndValue(int index)
+            {
+                valueEndIndex = index;
+                isValueStarted = false;
+                valuesFound++;
+            }
+
+            void AddNode()
+            {
+                var name = arrayName.ToLower().Replace(" ", "");
+                if (name.EndsWith('s'))
+                {
+                    name = name[..^1];
+                }
+
+                var value = string.Concat(valueChars).Substring(valueStartIndex, valueEndIndex - valueStartIndex);
+                var node = DataNode.CreateInstance(name, value.ToCharArray());
+                nodes.Add(node);
+            }
         }
     }
 }
