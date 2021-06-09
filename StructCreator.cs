@@ -4,23 +4,14 @@ namespace Parser
 {
     public class StructCreator
     {
-        public static void CreateClass(DataNode dataNode)
+        public static void CreateStruct(DataNode dataNode)
         {
-            if (dataNode.Type != ValueType.Object)
-            {
-                return;
-            }
+            if (dataNode.Type != ValueType.Object) return;
 
             var filePath = "Output";
             var filePathAndName = $"{filePath}/{dataNode.Name}.cs";
-            
-            var directoryInfo = new DirectoryInfo(filePath);
-            var files = directoryInfo.GetFiles($"{dataNode.Name}.cs");
 
-            if (files.Length > 0)
-            {
-                return;
-            }
+            //if (CheckIfAlreadyExists()) return;
 
             using var streamWriter = new StreamWriter(filePathAndName, false);
             WriteClassTop(streamWriter, "testNameSpace", dataNode.Name);
@@ -28,6 +19,15 @@ namespace Parser
             WriteClassEnd(streamWriter);
 
             DefineChildObjects(dataNode);
+
+
+            bool CheckIfAlreadyExists()
+            {
+                var directoryInfo = new DirectoryInfo(filePath);
+                var files = directoryInfo.GetFiles($"{dataNode.Name}.cs");
+
+                return files.Length > 0;
+            }
         }
 
         private static void WriteClassTop(StreamWriter streamWriter, string namespaceName, string className)
@@ -107,13 +107,17 @@ namespace Parser
             {
                 if (valueNode.Type == ValueType.Object)
                 {
-                    CreateClass(valueNode);
+                    CreateStruct(valueNode);
                 }
                 else if (valueNode.Type == ValueType.Array && valueNode.value.Count != 0)
                 {
                     if (valueNode.value[0].Type == ValueType.Object)
                     {
-                        CreateClass(valueNode.value[0]);
+                        CreateStruct(valueNode.value[0]);
+                    }
+                    else if (valueNode.value[0].Type == ValueType.Array)
+                    {
+                        DefineChildObjects(valueNode.value[0]);
                     }
                 }
             }

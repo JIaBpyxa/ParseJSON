@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Parser
 {
-    public class IOController
+    public class InputController
     {
         public static string TryGetInputFileContent()
         {
@@ -20,6 +20,7 @@ namespace Parser
 
         private static string GetInputFileContent()
         {
+            Console.WriteLine("Input file's path");
             var path = Console.ReadLine();
             return File.ReadAllText(path);
         }

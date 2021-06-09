@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Parser
 {
@@ -9,12 +10,11 @@ namespace Parser
         public ValueType Type { get; private set; }
         public List<DataNode> value;
         public object valueData;
-
         private readonly char[] _valueChars;
 
         public static DataNode CreateInstance(char[] chars)
         {
-            return CreateInstance("mainObject", chars);
+            return CreateInstance("mainClass", chars);
         }
 
         public static DataNode CreateInstance(string name, char[] chars)
@@ -31,17 +31,18 @@ namespace Parser
             DefineValue();
         }
 
-        public void PrintValues()
+        public void PrintValues(int floor = 0)
         {
             foreach (var node in value)
             {
-                Console.WriteLine($"{node.Name} {node.Type}");
-                if (node.Type == ValueType.String)
+                var tabs = string.Concat(Enumerable.Repeat("\t", floor));
+                Console.WriteLine($"{tabs}{node.Name} {node.Type}");
+                if (node.Type is ValueType.String or ValueType.Number or ValueType.True or ValueType.False)
                 {
                     var strValue = node.valueData as string;
-                    Console.WriteLine($"{strValue}");
+                    Console.WriteLine($"{tabs}{strValue}");
                 }
-                node.PrintValues();
+                node.PrintValues(floor + 1);
             }
         }
 

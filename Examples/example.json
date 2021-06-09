@@ -1,9 +1,9 @@
-{ 
-  "menu": "Файл", 
+{
+  "menu": "Файл",
   "commands": [
     {
       "title": "Создать",
-      "action":"CreateDoc"
+      "action": "CreateDoc"
     },
     {
       "title": "Открыть",
@@ -13,5 +13,5 @@
       "title": "Закрыть",
       "action": "CloseDoc"
     }
-   ] 
+  ]
 }

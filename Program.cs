@@ -1,16 +1,14 @@
-﻿using System;
-
-namespace Parser
+﻿namespace Parser
 {
     class Program
     {
         private static void Main(string[] args)
         {
-            var content = IOController.TryGetInputFileContent();
+            var content = InputController.TryGetInputFileContent();
             var chars = content.ToCharArray();
             var mainNode = DataNode.CreateInstance(chars);
             mainNode.PrintValues();
-            StructCreator.CreateClass(mainNode);
+            StructCreator.CreateStruct(mainNode);
         }
     }
 }

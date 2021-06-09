@@ -66,7 +66,6 @@ namespace Parser
 
             void CheckBeginObject(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 1 || arraysOpened != 0) return;
                 
                 StartValue(index);
@@ -74,7 +73,6 @@ namespace Parser
 
             void CheckEndObject(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 0 || arraysOpened != 0) return;
 
                 EndValue(index);
@@ -83,7 +81,6 @@ namespace Parser
 
             void CheckBeginArray(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (arraysOpened != 1 || objectOpened != 0) return;
                 
                 StartValue(index);
@@ -91,7 +88,6 @@ namespace Parser
 
             void CheckEndArray(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 0 || arraysOpened != 0) return;
 
                 EndValue(index);
@@ -167,7 +163,7 @@ namespace Parser
         {
             var value = string.Concat(valueChars).Replace("\"", "").ToLower();
 
-            if (float.TryParse(value, out var number))
+            if (float.TryParse(value, out _))
             {
                 return (ValueType.Number, value);
             }
@@ -225,7 +221,6 @@ namespace Parser
 
             void CheckBeginObject(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 1 || arraysOpened != 0) return;
                 
                 StartValue(index);
@@ -233,7 +228,6 @@ namespace Parser
 
             void CheckEndObject(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 0 || arraysOpened != 0) return;
 
                 EndValue(index);
@@ -242,7 +236,6 @@ namespace Parser
 
             void CheckBeginArray(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (arraysOpened != 1 || objectOpened != 0) return;
                 
                 StartValue(index);
@@ -250,7 +243,6 @@ namespace Parser
 
             void CheckEndArray(int index)
             {
-                if (index > 0 && valueChars[index - 1] == '\\') return;
                 if (objectOpened != 0 || arraysOpened != 0) return;
 
                 EndValue(index);
@@ -307,7 +299,7 @@ namespace Parser
                 if (!chars[index].Equals(BeginObject)) continue;
                 return index;
             }
-
+            
             throw new Exception("Can't find object's begin");
         }
 
